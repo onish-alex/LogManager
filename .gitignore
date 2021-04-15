@@ -1,0 +1,8 @@
+LogManager.Console/
+.vs/LogManager/v16/.suo
+LogManager.Core/bin/
+LogManager.Core/obj/
+LogManager.DAL/bin/
+LogManager.DAL/obj/
+LogManager.Web/bin/
+LogManager.Web/obj/
