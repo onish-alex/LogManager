@@ -3,16 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogManager.Core", "LogManager.Core\LogManager.Core.csproj", "{DCCEE8F3-5138-4E8F-8113-F000EBF3CEBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogManager.Core", "LogManager.Core\LogManager.Core.csproj", "{DCCEE8F3-5138-4E8F-8113-F000EBF3CEBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogManager.DAL", "LogManager.DAL\LogManager.DAL.csproj", "{7D10A274-F84A-4B4D-BD5F-EEB4BB38F4BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogManager.DAL", "LogManager.DAL\LogManager.DAL.csproj", "{7D10A274-F84A-4B4D-BD5F-EEB4BB38F4BC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DCCEE8F3-5138-4E8F-8113-F000EBF3CEBC} = {DCCEE8F3-5138-4E8F-8113-F000EBF3CEBC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogManager.Console", "LogManager.Console\LogManager.Console.csproj", "{80755AAF-C5AA-4B48-9BA8-718EC227C24F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogManager.Console", "LogManager.Console\LogManager.Console.csproj", "{80755AAF-C5AA-4B48-9BA8-718EC227C24F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogManager.Web", "LogManager.Web\LogManager.Web.csproj", "{585334BB-06FC-430E-9E83-FE9001C1D745}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogManager.Web", "LogManager.Web\LogManager.Web.csproj", "{585334BB-06FC-430E-9E83-FE9001C1D745}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogManager.BLL", "LogManager.BLL\LogManager.BLL.csproj", "{0668F8EC-DA40-47F1-BE17-378290FA5C07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{585334BB-06FC-430E-9E83-FE9001C1D745}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{585334BB-06FC-430E-9E83-FE9001C1D745}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{585334BB-06FC-430E-9E83-FE9001C1D745}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0668F8EC-DA40-47F1-BE17-378290FA5C07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0668F8EC-DA40-47F1-BE17-378290FA5C07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0668F8EC-DA40-47F1-BE17-378290FA5C07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0668F8EC-DA40-47F1-BE17-378290FA5C07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

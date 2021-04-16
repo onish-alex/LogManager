@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LogManager.BLL\LogManager.BLL.csproj" />
+    <ProjectReference Include="..\LogManager.Core\LogManager.Core.csproj" />
     <ProjectReference Include="..\LogManager.DAL\LogManager.DAL.csproj" />
   </ItemGroup>
 

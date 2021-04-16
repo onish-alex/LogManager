@@ -16,9 +16,13 @@ namespace LogManager.Core.Abstractions.DAL
 
         public Task UpdateAsync(T item);
 
+        public Task<T> GetByIdAsync(long id);
+
+        public Task<T> GetByIdAsync(long id, params Expression<Func<T, dynamic>>[] includes);
+
         public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
 
-        //public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Func<T, dynamic>[] includes);
+        public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, dynamic>>[] includes);
 
         //public Task<IEnumerable<T>> GetPageAsync(PageInfo pageInfo, Func<T, dynamic> sortField);
 

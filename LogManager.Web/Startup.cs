@@ -1,4 +1,9 @@
+using LogManager.BLL.Services;
+using LogManager.BLL.Utilities;
+using LogManager.Core.Abstractions.BLL;
+using LogManager.Core.Abstractions.DAL;
 using LogManager.DAL.Contexts;
+using LogManager.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,6 +34,11 @@ namespace LogManager.Web
             services.AddDbContext<LogManagerDbContext>(options =>
                 options.UseSqlServer(
                    Configuration.GetConnectionString("LogManagerDB")));
+
+            services.AddScoped(typeof(IRepository<>), typeof(LogRepository<>));
+
+            services.AddSingleton<ILogParser<ParsedLogEntry>, LogParser>();
+            services.AddScoped<ILogService, LogService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

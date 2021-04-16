@@ -6,3 +6,6 @@ LogManager.DAL/bin/
 LogManager.DAL/obj/
 LogManager.Web/bin/
 LogManager.Web/obj/
+LogManager.BLL/bin/
+LogManager.BLL/obj/
+.vs/
