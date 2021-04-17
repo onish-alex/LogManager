@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="10.0.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.32" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="WhoisClient.NET" Version="3.0.1" />
   </ItemGroup>
 

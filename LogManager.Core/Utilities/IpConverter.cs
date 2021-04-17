@@ -28,7 +28,7 @@ namespace LogManager.Core.Utilities
                         return builder.ToString();
                     }
 
-                default: throw new ArgumentException(ErrorMessages.IncorrectIpFormat);
+                default: throw new ArgumentException(ErrorMessages.InvalidIpFormat);
             }
         }
 
@@ -50,7 +50,7 @@ namespace LogManager.Core.Utilities
                     }
                     else
                     {
-                        throw new ArgumentException(ErrorMessages.IncorrectIpFormat);
+                        throw new ArgumentException(ErrorMessages.InvalidIpFormat);
                     }
                     
                 }
@@ -73,13 +73,13 @@ namespace LogManager.Core.Utilities
                     }
                     else
                     {
-                        throw new ArgumentException(ErrorMessages.IncorrectIpFormat);
+                        throw new ArgumentException(ErrorMessages.InvalidIpFormat);
                     }
                 }
             }
             else
             {
-                throw new ArgumentException(ErrorMessages.IncorrectIpFormat);
+                throw new ArgumentException(ErrorMessages.InvalidIpFormat);
             }
 
             return ipInBytes.ToArray();

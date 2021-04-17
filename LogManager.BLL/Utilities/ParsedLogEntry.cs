@@ -13,6 +13,5 @@
         public string Status { get; set; }
 
         public string Amount { get; set; }
-
     }
 }

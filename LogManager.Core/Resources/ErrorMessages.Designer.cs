@@ -63,9 +63,18 @@ namespace LogManager.Core.Resources {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Некорректный формат IP адреса.
         /// </summary>
-        public static string IncorrectIpFormat {
+        public static string InvalidIpFormat {
             get {
-                return ResourceManager.GetString("IncorrectIpFormat", resourceCulture);
+                return ResourceManager.GetString("InvalidIpFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Неверный формат записи лога.
+        /// </summary>
+        public static string InvalidLogFormat {
+            get {
+                return ResourceManager.GetString("InvalidLogFormat", resourceCulture);
             }
         }
     }

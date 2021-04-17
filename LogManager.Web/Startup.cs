@@ -1,4 +1,5 @@
 using LogManager.BLL.Services;
+using LogManager.Core.Settings;
 using LogManager.BLL.Utilities;
 using LogManager.Core.Abstractions.BLL;
 using LogManager.Core.Abstractions.DAL;
@@ -15,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LogManager.BLL.Validation;
+using FluentValidation;
 
 namespace LogManager.Web
 {
@@ -30,14 +33,19 @@ namespace LogManager.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.AddControllersWithViews();
+
             services.AddDbContext<LogManagerDbContext>(options =>
                 options.UseSqlServer(
                    Configuration.GetConnectionString("LogManagerDB")));
 
+            services.Configure<RequestSettings>(this.Configuration.GetSection("RequestSettings"));
+            
             services.AddScoped(typeof(IRepository<>), typeof(LogRepository<>));
 
-            services.AddSingleton<ILogParser<ParsedLogEntry>, LogParser>();
+            services.AddScoped<ILogParser<ParsedLogEntry>, LogParser>();
+            services.AddScoped<IValidator<ParsedLogEntry>, LogEntryValidator>();
+            services.AddScoped<WebHelper>();
             services.AddScoped<ILogService, LogService>();
         }
 
@@ -64,7 +72,9 @@ namespace LogManager.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

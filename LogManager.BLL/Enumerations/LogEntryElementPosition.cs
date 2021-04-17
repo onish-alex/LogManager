@@ -2,11 +2,12 @@
 {
     enum LogEntryElementPosition
     {
-        IP = 0,
+        Ip = 0,
         Date = 3,
-        Method = 4,
-        Path = 5,
-        Status = 7,
-        Amount = 8,
+        Timezone = 4,
+        Method = 5,
+        Path = 6,
+        Status = 8,
+        Amount = 9,
     }
 }

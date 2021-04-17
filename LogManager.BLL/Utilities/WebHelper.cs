@@ -5,38 +5,44 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Whois.NET;
+using HtmlAgilityPack;
+using LogManager.Core.Settings;
+using Microsoft.Extensions.Options;
 
 namespace LogManager.BLL.Utilities
 {
     public class WebHelper
     {
-        public static readonly string DefaultUrl = "http://tariscope.com";
-
-        public async Task<string> GetOrganizationNameFromWhois(string ip)
+        private RequestSettings requestSettings;
+        
+        public WebHelper(IOptionsSnapshot<RequestSettings> requestSettingsSnapshot)
         {
-            //TODO check ip format
+            this.requestSettings = requestSettingsSnapshot.Value;
+        }
 
+        public async Task<string> GetOrganizationNameByWhoisAsync(string ip)
+        {
             var response = await WhoisClient.QueryAsync(ip);
-
             return response.OrganizationName;
         }
 
-        public WebPageInfo MakeGetRequest(string filePath)
+        public WebPageInfo GetPageInfo(string filePath)
         {
             var client = new WebClient();
-            var pageInBytes = client.DownloadData(DefaultUrl + filePath);
-            var pageInString = client.Encoding.GetString(pageInBytes);
+            var pageContent = client.DownloadString(new Uri(requestSettings.DefaultUrl + filePath));
+            var pageSize = client.Encoding.GetByteCount(pageContent);
 
-            string pageTitle = null;
+            var document = new HtmlDocument();
+            document.LoadHtml(pageContent);
+            var titleNode = document.DocumentNode.SelectSingleNode("//head/title");
 
-            //TODO title fetching
+            var pageTitle = titleNode.InnerText ?? string.Empty;
 
             return new WebPageInfo()
             {
-                Size = pageInBytes.Length,
-                //Title = 
+                Size = pageSize,
+                Title = pageTitle
             };
         }
-
     }
 }
