@@ -20,6 +20,7 @@ namespace LogManager.DAL.Contexts
         {
             modelBuilder.Entity<Ip>().Property(x => x.Address).HasMaxLength(16);
             modelBuilder.Entity<Ip>().HasIndex(x => x.Address).IsUnique();
+            modelBuilder.Entity<LogEntry>().Property(x => x.Date).HasColumnType("datetimeoffset(0)");
         }
     }
 }

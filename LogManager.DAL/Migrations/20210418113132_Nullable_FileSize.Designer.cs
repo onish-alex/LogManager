@@ -4,14 +4,16 @@ using LogManager.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LogManager.DAL.Migrations
 {
     [DbContext(typeof(LogManagerDbContext))]
-    partial class LogManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210418113132_Nullable_FileSize")]
+    partial class Nullable_FileSize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

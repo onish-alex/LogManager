@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LogManager.BLL.Validation;
 using FluentValidation;
+using LogManager.DAL.Factories;
 
 namespace LogManager.Web
 {
@@ -40,12 +41,15 @@ namespace LogManager.Web
                    Configuration.GetConnectionString("LogManagerDB")));
 
             services.Configure<RequestSettings>(this.Configuration.GetSection("RequestSettings"));
-            
-            services.AddScoped(typeof(IRepository<>), typeof(LogRepository<>));
+            services.Configure<ConnectionSettings>(this.Configuration.GetSection("ConnectionSettings"));
+
+            services.AddScoped<IDbContextFactory<LogManagerDbContext>, DbContextFactory>();
+            services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
             services.AddScoped<ILogParser<ParsedLogEntry>, LogParser>();
             services.AddScoped<IValidator<ParsedLogEntry>, LogEntryValidator>();
             services.AddScoped<WebHelper>();
+            
             services.AddScoped<ILogService, LogService>();
         }
 

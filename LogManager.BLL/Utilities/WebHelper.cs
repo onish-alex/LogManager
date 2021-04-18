@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Whois.NET;
 using HtmlAgilityPack;
@@ -20,23 +17,34 @@ namespace LogManager.BLL.Utilities
             this.requestSettings = requestSettingsSnapshot.Value;
         }
 
-        public async Task<string> GetOrganizationNameByWhoisAsync(string ip)
+        public string GetOrganizationNameByWhois(string ip)
         {
-            var response = await WhoisClient.QueryAsync(ip);
+            var response = WhoisClient.Query(ip);
             return response.OrganizationName;
         }
 
         public WebPageInfo GetPageInfo(string filePath)
         {
             var client = new WebClient();
-            var pageContent = client.DownloadString(new Uri(requestSettings.DefaultUrl + filePath));
+
+            string pageContent;
+
+            try
+            {
+                pageContent = client.DownloadString(new Uri(requestSettings.DefaultUrl + filePath));
+            }
+            catch
+            {
+                throw;
+            }
+
             var pageSize = client.Encoding.GetByteCount(pageContent);
 
             var document = new HtmlDocument();
             document.LoadHtml(pageContent);
             var titleNode = document.DocumentNode.SelectSingleNode("//head/title");
 
-            var pageTitle = titleNode.InnerText ?? string.Empty;
+            var pageTitle = titleNode?.InnerText ?? string.Empty;
 
             return new WebPageInfo()
             {

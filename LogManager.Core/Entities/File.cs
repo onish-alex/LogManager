@@ -6,6 +6,6 @@
 
         public string Title { get; set; }
 
-        public int Size { get; set; } 
+        public int? Size { get; set; } 
     }
 }

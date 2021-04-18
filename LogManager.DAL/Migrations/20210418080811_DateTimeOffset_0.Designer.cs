@@ -4,14 +4,16 @@ using LogManager.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LogManager.DAL.Migrations
 {
     [DbContext(typeof(LogManagerDbContext))]
-    partial class LogManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210418080811_DateTimeOffset_0")]
+    partial class DateTimeOffset_0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +31,7 @@ namespace LogManager.DAL.Migrations
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Size")
+                    b.Property<int>("Size")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
