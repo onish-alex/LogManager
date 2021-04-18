@@ -21,27 +21,17 @@ namespace LogManager.BLL.Services
         private WebHelper webHelper;
         private IValidator<ParsedLogEntry> logValidator;
         private IRepositoryFactory repositoryFactory;
-        //private IRepository<Ip> ipRepository;
-        //private IRepository<File> fileRepository;
-        //private IRepository<LogEntry> logEntryRepository;
 
         public LogService(
             ILogParser<ParsedLogEntry> parser,
             WebHelper webHelper,
             IValidator<ParsedLogEntry> logValidator,
-            IRepositoryFactory repositoryFactory
-            //IRepository<Ip> ipRepository,
-            //IRepository<File> fileRepository,
-            //IRepository<LogEntry> logEntryRepository
-            )
+            IRepositoryFactory repositoryFactory)
         {
             this.parser = parser;
             this.webHelper = webHelper;
             this.logValidator = logValidator;
             this.repositoryFactory = repositoryFactory;
-            //this.ipRepository = ipRepository;
-            //this.fileRepository = fileRepository;
-            //this.logEntryRepository = logEntryRepository;
         }
 
         public void LoadLogFile(string path)
@@ -119,7 +109,7 @@ namespace LogManager.BLL.Services
                 {
                     WriteLogToDb(parsedLog);
                 }
-        }
+            }
 
             var ipInBytes = IpConverter.FromString(parsedLog.IpAddress);
             var ipToCheck = repository.FindFirst<Ip>(x => x.Address.SequenceEqual(ipInBytes));
@@ -165,8 +155,6 @@ namespace LogManager.BLL.Services
             {
                 WriteLogToDb(parsedLog);
             }
-
-            //repository.Save();
         }
     }
 }
