@@ -37,21 +37,27 @@ namespace LogManager.BLL.Services
         public void LoadLogFile(string path)
         {
             var parsedData = this.ReadLogsFromFile(path);
-            Parallel.ForEach(parsedData, WriteLogToDb);
+
+            var options = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount,
+            };
+
+            Parallel.ForEach(parsedData, options, WriteLogToDb);
         }
 
         private IEnumerable<ParsedLogEntry> ReadLogsFromFile(string path)
         {
             var parsedData = new List<ParsedLogEntry>();
 
-            var reader = new StreamReader(path);
-            
+            using (var reader = new StreamReader(path))
+            {
                 ParsedLogEntry parsedEntry;
 
                 while (!reader.EndOfStream)
                 {
                     var entry = reader.ReadLine();
-                    
+
                     try
                     {
                         parsedEntry = parser.Parse(entry);
@@ -67,93 +73,83 @@ namespace LogManager.BLL.Services
                         parsedData.Add(parsedEntry);
                 }
 
-            reader.Dispose();
+            }
 
             return parsedData;
         }
 
         private void WriteLogToDb(ParsedLogEntry parsedLog)
         {
-            var repository = this.repositoryFactory.CreateLogRepository();
-
-            var fileToCheck = repository.FindFirst<File>(x => x.Path == parsedLog.Path);
-
-            if (fileToCheck == null)
+            using (var repository = this.repositoryFactory.CreateLogRepository())
             {
-                WebPageInfo pageInfo;
+                var fileToCheck = repository.FindFirst<File>(x => x.Path == parsedLog.Path);
 
-                try
+                if (fileToCheck == null)
                 {
-                    pageInfo = webHelper.GetPageInfo(parsedLog.Path);
+                    WebPageInfo pageInfo;
 
-                    fileToCheck = new File()
+                    try
                     {
-                        Path = parsedLog.Path,
-                        Size = pageInfo.Size,
-                        Title = pageInfo.Title,
-                    };
-                }
-                catch
-                {
-                    fileToCheck = new File()
-                    {
-                        Path = parsedLog.Path,
-                    };
-                }
+                        pageInfo = webHelper.GetPageInfo(parsedLog.Path);
 
-                try
-                {
+                        fileToCheck = new File()
+                        {
+                            Path = parsedLog.Path,
+                            Size = pageInfo.Size,
+                            Title = pageInfo.Title,
+                        };
+                    }
+                    catch
+                    {
+                        fileToCheck = new File()
+                        {
+                            Path = parsedLog.Path,
+                        };
+                    }
+
                     repository.Create(fileToCheck);
                 }
-                catch
+
+                var ipInBytes = IpConverter.FromString(parsedLog.IpAddress);
+                var ipToCheck = repository.FindFirst<Ip>(x => x.Address.SequenceEqual(ipInBytes));
+
+                if (ipToCheck == null)
                 {
-                    WriteLogToDb(parsedLog);
+                    var organization = webHelper.GetOrganizationNameByWhois(parsedLog.IpAddress);
+                    ipToCheck = new Ip()
+                    {
+                        Address = ipInBytes,
+                        OwnerName = organization,
+                    };
+                   
+                    repository.Create(ipToCheck);
                 }
-            }
 
-            var ipInBytes = IpConverter.FromString(parsedLog.IpAddress);
-            var ipToCheck = repository.FindFirst<Ip>(x => x.Address.SequenceEqual(ipInBytes));
-
-            if (ipToCheck == null)
-            {
-                var organization = webHelper.GetOrganizationNameByWhois(parsedLog.IpAddress);
-                ipToCheck = new Ip()
+                var logEntry = new LogEntry()
                 {
-                    Address = ipInBytes,
-                    OwnerName = organization,
+                    IpInfo = ipToCheck,
+                    FileInfo = fileToCheck,
+                    Method = parsedLog.Method,
+                    Amount = int.Parse(parsedLog.Amount),
+                    StatusCode = short.Parse(parsedLog.Status),
+                    Date = DateTimeOffset.ParseExact(
+                        parsedLog.Date,
+                        LogSettings.DateTimeOffsetPattern,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None),
                 };
+
+                repository.Create(logEntry);
 
                 try
                 {
-                    repository.Create(ipToCheck);
+                    repository.Save();
                 }
                 catch
                 {
                     WriteLogToDb(parsedLog);
+                    return;
                 }
-            }
-
-            var logEntry = new LogEntry()
-            {
-                IpInfo = ipToCheck,
-                FileInfo = fileToCheck,
-                Method = parsedLog.Method,
-                Amount = int.Parse(parsedLog.Amount),
-                StatusCode = short.Parse(parsedLog.Status),
-                Date = DateTimeOffset.ParseExact(
-                    parsedLog.Date,
-                    LogSettings.DateTimeOffsetPattern,
-                    System.Globalization.CultureInfo.InvariantCulture,
-                    System.Globalization.DateTimeStyles.None),
-            };
-
-            try
-            {
-                repository.Create(logEntry);
-            }
-            catch
-            {
-                WriteLogToDb(parsedLog);
             }
         }
     }

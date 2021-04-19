@@ -22,7 +22,7 @@ namespace LogManager.DAL.Repositories
         public async Task CreateAsync<T>(T item) where T : BaseEntity
         {
             await this.dbContext.Set<T>().AddAsync(item);
-            await this.dbContext.SaveChangesAsync();
+            //await this.dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync<T>(long id) where T : BaseEntity
@@ -90,7 +90,7 @@ namespace LogManager.DAL.Repositories
         public void Create<T>(T item) where T : BaseEntity
         {
             this.dbContext.Set<T>().Add(item);
-            this.dbContext.SaveChanges();
+            //this.dbContext.SaveChanges();
         }
 
         public T FindFirst<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity
@@ -101,6 +101,11 @@ namespace LogManager.DAL.Repositories
         public void Save()
         {
             this.dbContext.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            this.dbContext.Dispose();
         }
     }
 }

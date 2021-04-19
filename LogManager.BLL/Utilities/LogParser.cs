@@ -11,19 +11,9 @@ namespace LogManager.BLL.Utilities
 {
     public class LogParser : ILogParser<ParsedLogEntry>
     {
-        private RequestSettings requestSettings;
-
-        public LogParser(IOptionsSnapshot<RequestSettings> requestSettingOptions)
-        {
-            this.requestSettings = requestSettingOptions.Value;
-        }
-        
         public ParsedLogEntry Parse(string logEntry)
         {
             var entryElements = logEntry.Split(new char[] { '\"', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (entryElements.Length != LogSettings.EntryPartsCount)
-                throw new ArgumentException(ErrorMessages.InvalidLogFormat);
 
             var parsedLog = new ParsedLogEntry()
             {

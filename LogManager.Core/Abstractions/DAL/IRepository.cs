@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LogManager.Core.Abstractions.DAL
 {
-    public interface IRepository
+    public interface IRepository : IDisposable
     {
         public Task CreateAsync<T>(T item) where T : BaseEntity;
 

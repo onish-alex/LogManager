@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Threading.Tasks;
 using Whois.NET;
 using HtmlAgilityPack;
 using LogManager.Core.Settings;
@@ -11,10 +10,13 @@ namespace LogManager.BLL.Utilities
     public class WebHelper
     {
         private RequestSettings requestSettings;
-        
+        private WebClient client;
+        private object locker = new object();
+
         public WebHelper(IOptionsSnapshot<RequestSettings> requestSettingsSnapshot)
         {
             this.requestSettings = requestSettingsSnapshot.Value;
+            this.client = new WebClient();
         }
 
         public string GetOrganizationNameByWhois(string ip)
@@ -25,13 +27,12 @@ namespace LogManager.BLL.Utilities
 
         public WebPageInfo GetPageInfo(string filePath)
         {
-            var client = new WebClient();
-
             string pageContent;
 
             try
             {
-                pageContent = client.DownloadString(new Uri(requestSettings.DefaultUrl + filePath));
+                lock (locker)
+                    pageContent = client.DownloadString(new Uri(requestSettings.DefaultUrl + filePath));
             }
             catch
             {
