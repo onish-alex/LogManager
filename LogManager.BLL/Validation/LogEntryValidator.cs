@@ -14,7 +14,7 @@ namespace LogManager.BLL.Validation
     {
         private RequestSettings requestSettings;
 
-        public LogEntryValidator(IOptionsSnapshot<RequestSettings> requestSettingOptions)
+        public LogEntryValidator(IOptions<RequestSettings> requestSettingOptions)
         {
             this.requestSettings = requestSettingOptions.Value;
 

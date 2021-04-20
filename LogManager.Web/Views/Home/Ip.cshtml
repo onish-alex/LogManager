@@ -1,0 +1,9 @@
+﻿@model PaginatedList<Ip>
+@{
+    ViewData["Title"] = "IP-адреса";
+}
+
+<div class="ip-area">
+    <partial name="_IpPartial" model="@Model" />
+</div>
+

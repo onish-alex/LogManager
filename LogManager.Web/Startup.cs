@@ -1,24 +1,18 @@
+using FluentValidation;
 using LogManager.BLL.Services;
-using LogManager.Core.Settings;
 using LogManager.BLL.Utilities;
+using LogManager.BLL.Validation;
 using LogManager.Core.Abstractions.BLL;
 using LogManager.Core.Abstractions.DAL;
+using LogManager.Core.Settings;
 using LogManager.DAL.Contexts;
-using LogManager.DAL.Repositories;
+using LogManager.DAL.Factories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LogManager.BLL.Validation;
-using FluentValidation;
-using LogManager.DAL.Factories;
 
 namespace LogManager.Web
 {
@@ -36,20 +30,20 @@ namespace LogManager.Web
         {
             services.AddControllersWithViews();
 
-            services.AddDbContext<LogManagerDbContext>(options =>
-                options.UseSqlServer(
-                   Configuration.GetConnectionString("LogManagerDB")));
+            services.AddHttpContextAccessor();
 
             services.Configure<RequestSettings>(this.Configuration.GetSection("RequestSettings"));
             services.Configure<ConnectionSettings>(this.Configuration.GetSection("ConnectionSettings"));
+            services.Configure<FileSettings>(this.Configuration.GetSection("FileSettings"));
+            services.Configure<PageSettings>(this.Configuration.GetSection("PageSettings"));
 
-            services.AddScoped<IDbContextFactory<LogManagerDbContext>, DbContextFactory>();
-            services.AddScoped<IRepositoryFactory, RepositoryFactory>();
+            services.AddSingleton<IDbContextFactory<LogManagerDbContext>, DbContextFactory>();
+            services.AddSingleton<IRepositoryFactory, RepositoryFactory>();
 
-            services.AddScoped<ILogParser<ParsedLogEntry>, LogParser>();
-            services.AddScoped<IValidator<ParsedLogEntry>, LogEntryValidator>();
-            services.AddScoped<WebHelper>();
-            
+            services.AddSingleton<ILogParser<ParsedLogEntry>, LogParser>();
+            services.AddSingleton<IValidator<ParsedLogEntry>, LogEntryValidator>();
+            services.AddSingleton<WebHelper>();
+
             services.AddScoped<ILogService, LogService>();
         }
 
@@ -62,11 +56,10 @@ namespace LogManager.Web
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -78,7 +71,7 @@ namespace LogManager.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=LogEntry}/{id?}");
             });
         }
     }

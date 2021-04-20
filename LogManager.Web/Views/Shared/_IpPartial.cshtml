@@ -1,0 +1,60 @@
+﻿@model PaginatedList<Ip>
+
+<input type="hidden" id="sort-field-input" value="@Model.SortField" />
+<input type="hidden" id="sort-descending-input" value="@Model.IsDescending.ToString()" />
+<input type="hidden" id="page-size-input" value="@Model.PageSize" />
+
+<input type="text" id="search-input" value="@Model.SearchText" placeholder="Поиск..." />
+<button id="ip-search">Искать</button>
+
+<div class="col-12 text-center border-top border-dark">
+    @for (var i = Model.Page + -Model.MinPage; i < Model.Page; i++)
+    {
+        <a asp-action="Ip"
+           asp-route-page="@i"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-sortField="@Model.SortField"
+           asp-route-isDescending="@Model.IsDescending"
+           asp-route-searchText="@Model.SearchText">
+            @i
+        </a>
+    }
+
+    <span>@Model.Page</span>
+
+    @for (var i = Model.Page + 1; i <= Model.Page + Model.MaxPage; i++)
+    {
+        <a asp-action="Ip"
+           asp-route-page="@i"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-sortField="@Model.SortField"
+           asp-route-isDescending="@Model.IsDescending"
+           asp-route-searchText="@Model.SearchText">
+            @i
+        </a>
+    }
+</div>
+
+<table border="1" class="ip-table">
+    <tr>
+        <th id="ip-address">IP-адрес</th>
+        <th id="ip-owner-name">Компания</th>
+    </tr>
+
+    @foreach (var ip in Model)
+    {
+        <tr>
+            <td>@IpConverter.FromBytes(ip.Address)</td>
+            <td>
+                @if (ip.OwnerName != null)
+                {
+                    <span>@ip.OwnerName</span>
+                }
+                else
+                {
+                    <span>-</span>
+                }
+            </td>
+        </tr>
+    }
+</table>

@@ -1,5 +1,7 @@
 ﻿using LogManager.Core.Abstractions.DAL;
 using LogManager.Core.Entities;
+using LogManager.Core.Extensions;
+using LogManager.Core.Utilities;
 using LogManager.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,14 +24,12 @@ namespace LogManager.DAL.Repositories
         public async Task CreateAsync<T>(T item) where T : BaseEntity
         {
             await this.dbContext.Set<T>().AddAsync(item);
-            //await this.dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync<T>(long id) where T : BaseEntity
         {
             var itemToRemove = await this.dbContext.FindAsync<T>(id);
             this.dbContext.Set<T>().Remove(itemToRemove);
-            await this.dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> ExistAsync<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity
@@ -76,10 +76,9 @@ namespace LogManager.DAL.Repositories
             return await this.dbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
-        public async Task UpdateAsync<T>(T item) where T : BaseEntity
+        public void Update<T>(T item) where T : BaseEntity
         {
             this.dbContext.Entry(item).State = EntityState.Modified;
-            await this.dbContext.SaveChangesAsync();
         }
 
         public async Task SaveAsync()
@@ -90,7 +89,6 @@ namespace LogManager.DAL.Repositories
         public void Create<T>(T item) where T : BaseEntity
         {
             this.dbContext.Set<T>().Add(item);
-            //this.dbContext.SaveChanges();
         }
 
         public T FindFirst<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity
@@ -107,5 +105,51 @@ namespace LogManager.DAL.Repositories
         {
             this.dbContext.Dispose();
         }
+
+        public IEnumerable<T> GetPage<T>(
+            PageInfo pageInfo, 
+            Func<T, object> sortField,
+            bool isDescending,
+            Func<T, bool> predicate,
+            params Expression<Func<T, dynamic>>[] includes) where T : BaseEntity
+        {
+            IQueryable<T> query = this.dbContext.Set<T>();
+
+            if (includes.Length != 0)
+            {
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+            }
+
+            IEnumerable<T> result = query.ToList();
+
+            if (predicate != null)
+            {
+                result = result.Where(predicate);
+            }
+
+            if (sortField != null)
+            {
+                result = (isDescending)
+                    ? result.OrderByDescending(sortField)
+                    : result.OrderBy(sortField);
+            }
+
+            result = result.Skip(pageInfo.PageSize * (pageInfo.PageNumber - 1)).Take(pageInfo.PageSize);
+
+            return result;
+        }
+
+        public async Task<long> GetCountAsync<T>() where T : BaseEntity
+        {
+            return await this.dbContext.Set<T>().CountAsync();
+        }
+
+        public long GetCount<T>(Func<T, bool> predicate) where T : BaseEntity
+        {
+            return this.dbContext.Set<T>()
+                .Where(predicate)
+                .Count();
+        }
+
     }
 }

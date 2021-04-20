@@ -84,5 +84,19 @@ namespace LogManager.Core.Utilities
 
             return ipInBytes.ToArray();
         }
+
+        public static long ToLong(byte[] ip)
+        {
+            var result = 0L;
+            var multiplier = 1;
+
+            for (int i = ip.Length - 1; i >= 0; i--)
+            {
+                result += (long)ip[i] * multiplier;
+                multiplier *= 1000;
+            }
+
+            return result;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace LogManager.BLL.Utilities
         private WebClient client;
         private object locker = new object();
 
-        public WebHelper(IOptionsSnapshot<RequestSettings> requestSettingsSnapshot)
+        public WebHelper(IOptions<RequestSettings> requestSettingsSnapshot)
         {
             this.requestSettings = requestSettingsSnapshot.Value;
             this.client = new WebClient();

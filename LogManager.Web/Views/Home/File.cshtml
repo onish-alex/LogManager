@@ -1,0 +1,9 @@
+﻿@model PaginatedList<File>
+@{
+    ViewData["Title"] = "Файлы";
+}
+
+<div class="file-area">
+    <partial name="_FilePartial" model="@Model"/>
+</div>
+

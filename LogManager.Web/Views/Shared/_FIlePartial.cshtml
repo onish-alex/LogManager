@@ -1,0 +1,71 @@
+﻿@model PaginatedList<File>
+
+<input type="hidden" id="sort-field-input" value="@Model.SortField" />
+<input type="hidden" id="sort-descending-input" value="@Model.IsDescending.ToString()" />
+<input type="hidden" id="page-size-input" value="@Model.PageSize" />
+
+<input type="text" id="search-input" value="@Model.SearchText" placeholder="Поиск..." />
+<button id="file-search">Искать</button>
+
+<div class="col-12 text-center border-top border-dark">
+    @for (var i = Model.Page + -Model.MinPage; i < Model.Page; i++)
+    {
+        <a asp-action="File"
+            asp-route-page="@i"
+            asp-route-pageSize="@Model.PageSize"
+            asp-route-sortField="@Model.SortField"
+            asp-route-isDescending="@Model.IsDescending"
+            asp-route-searchText="@Model.SearchText">
+            @i
+        </a>
+    }
+
+    <span>@Model.Page</span>
+
+    @for (var i = Model.Page + 1; i <= Model.Page + Model.MaxPage; i++)
+    {
+        <a asp-action="File"
+            asp-route-page="@i"
+            asp-route-pageSize="@Model.PageSize"
+            asp-route-sortField="@Model.SortField"
+            asp-route-isDescending="@Model.IsDescending"
+            asp-route-searchText="@Model.SearchText">
+            @i
+        </a>
+    }
+</div>
+
+<table border="1" class="file-table">
+    <tr>
+        <th id="file-path">Путь и название</th>
+        <th id="file-title">Наименование</th>
+        <th id="file-size">Размер</th>
+    </tr>
+
+    @foreach (var file in Model)
+    {
+        <tr>
+            <td>@file.Path</td>
+            <td>
+                @if (file.Title != null)
+                {
+                    <span>@file.Title</span>
+                }
+                else
+                {
+                    <span>-</span>
+                }
+            </td>
+            <td>
+                @if (file.Size != null)
+                {
+                    <span>@file.Size</span>
+                }
+                else
+                {
+                    <span>-</span>
+                }
+            </td>
+        </tr>
+    }
+</table>

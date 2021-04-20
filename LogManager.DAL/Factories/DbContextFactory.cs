@@ -10,7 +10,7 @@ namespace LogManager.DAL.Factories
     {
         private ConnectionSettings connectionSettings;
 
-        public DbContextFactory(IOptionsSnapshot<ConnectionSettings> connectionOption)
+        public DbContextFactory(IOptions<ConnectionSettings> connectionOption)
         {
             this.connectionSettings = connectionOption.Value;
         }
