@@ -8,7 +8,7 @@
 @if (!Model.IsLoad)
 {
 <form asp-action="Load" enctype="multipart/form-data" id="file-load">
-    <input type="file" name="file" accept="text/plain, text/x-log" id="file-content" />
+    <input type="file" name="file" accept="text/plain, .log" id="file-content" />
     <input type="submit" id="file-submit" value="Загрузить" />
 </form>
 }

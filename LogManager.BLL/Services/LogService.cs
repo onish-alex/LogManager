@@ -10,12 +10,10 @@ using LogManager.Core.Entities;
 using LogManager.Core.Utilities;
 using LogManager.Core.Settings;
 using FluentValidation;
-
-using File = LogManager.Core.Entities.File;
 using System.Threading;
 using Microsoft.Extensions.Options;
-using System.Reflection;
-using System.Linq.Expressions;
+
+using File = LogManager.Core.Entities.File;
 
 namespace LogManager.BLL.Services
 {
@@ -30,7 +28,6 @@ namespace LogManager.BLL.Services
         public double ProgressPercent => progressPercent;
         public string FileInProcess { get; private set; }
         public bool IsLoading { get; private set; }
-
 
         private double progressPercent;
         private int entriesProcessedCount;
@@ -201,8 +198,7 @@ namespace LogManager.BLL.Services
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<File>() / (double)pageSize)
                     : (int)Math.Ceiling(repository.GetCount<File>(
-                        x => x.Path.Contains(searchText)
-                          || (x.Title != null && x.Title.Contains(searchText))) 
+                    ExpressionHelper.GetSearchForFile(searchText)) 
                     / (double)pageSize);
 
                 if (pageTotalCount == 0)
@@ -215,7 +211,7 @@ namespace LogManager.BLL.Services
                     filePage = repository.GetPage(
                         pageInfo,
                         true,
-                        SortExpressions.ForFile(sortField),
+                        ExpressionHelper.GetSortForFile(sortField),
                         isDescending,
                         null);
                 }
@@ -224,30 +220,12 @@ namespace LogManager.BLL.Services
                     filePage = repository.GetPage(
                         pageInfo,
                         true,
-                        SortExpressions.ForFile(sortField),
+                        ExpressionHelper.GetSortForFile(sortField),
                         isDescending,
-                        x => x.Path.Contains(searchText) 
-                         || (x.Title != null && x.Title.Contains(searchText)));
+                        ExpressionHelper.GetSearchForFile(searchText));
                 }
 
-                var minPage = (page - 1 < pageSettings.LinkCount / 2)
-                    ? page - 1
-                    : pageSettings.LinkCount / 2;
-
-                var maxPage = (pageTotalCount - page < pageSettings.LinkCount - minPage)
-                    ? pageTotalCount - page
-                    : pageSettings.LinkCount - minPage;
-
-                minPage = (page - 1 < pageSettings.LinkCount - maxPage)
-                    ? page - 1
-                    : pageSettings.LinkCount - maxPage;
-
-                var paginatedList = new PaginatedList<File>(
-                    filePage,
-                    page,
-                    pageSize,
-                    pageTotalCount, 
-                    minPage, maxPage);
+                var paginatedList = GeneratePaginatedList(filePage, page, pageSize, pageTotalCount);
 
                 paginatedList.IsDescending = isDescending;
                 paginatedList.SortField = sortField;
@@ -272,12 +250,12 @@ namespace LogManager.BLL.Services
                     PageSize = pageSize,
                 };
 
-                IEnumerable<Ip> filePage;
+                IEnumerable<Ip> ipPage;
 
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<Ip>() / (double)pageSize)
                     : (int)Math.Ceiling(repository.GetCount<Ip>(
-                          x => x.OwnerName != null && x.OwnerName.Contains(searchText)) 
+                          ExpressionHelper.GetSearchForIp(searchText)) 
                     / (double)pageSize);
 
                 if (pageTotalCount == 0)
@@ -287,41 +265,24 @@ namespace LogManager.BLL.Services
 
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    filePage = repository.GetPage(
+                    ipPage = repository.GetPage(
                         pageInfo,
                         true,
-                        SortExpressions.ForIp(sortField),
+                        ExpressionHelper.GetSortForIp(sortField),
                         isDescending,
                         null);
                 }
                 else
                 {
-                    filePage = repository.GetPage(
+                    ipPage = repository.GetPage(
                         pageInfo,
                         true,
-                        SortExpressions.ForIp(sortField),
+                        ExpressionHelper.GetSortForIp(sortField),
                         isDescending,
-                        x => x.OwnerName != null && x.OwnerName.Contains(searchText));
+                        ExpressionHelper.GetSearchForIp(searchText));
                 }
 
-                var minPage = (page - 1 < pageSettings.LinkCount / 2)
-                    ? page - 1
-                    : pageSettings.LinkCount / 2;
-
-                var maxPage = (pageTotalCount - page < pageSettings.LinkCount - minPage)
-                    ? pageTotalCount - page
-                    : pageSettings.LinkCount - minPage;
-
-                minPage = (page - 1 < pageSettings.LinkCount - maxPage)
-                    ? page - 1
-                    : pageSettings.LinkCount - maxPage;
-
-                var paginatedList = new PaginatedList<Ip>(
-                    filePage,
-                    page,
-                    pageSize,
-                    pageTotalCount,
-                    minPage, maxPage);
+                var paginatedList = GeneratePaginatedList(ipPage, page, pageSize, pageTotalCount);
 
                 paginatedList.IsDescending = isDescending;
                 paginatedList.SortField = sortField;
@@ -346,14 +307,14 @@ namespace LogManager.BLL.Services
                     PageSize = pageSize,
                 };
 
-                IEnumerable<LogEntry> filePage;
+                IEnumerable<LogEntry> logPage;
 
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    filePage = repository.GetPage(
+                    logPage = repository.GetPage(
                         pageInfo,
                         true,
-                        SortExpressions.ForLog(sortField),
+                        ExpressionHelper.GetSortForLog(sortField),
                         isDescending,
                         null,
                         x => x.IpInfo,
@@ -361,28 +322,20 @@ namespace LogManager.BLL.Services
                 }
                 else
                 {
-                    filePage = repository.GetPage(
+                    logPage = repository.GetPage(
                         pageInfo,
                         true,
-                        SortExpressions.ForLog(sortField),
+                        ExpressionHelper.GetSortForLog(sortField),
                         isDescending,
-                        x => x.Date.ToString().Contains(searchText)
-                          || x.StatusCode.ToString().Contains(searchText)
-                          || (x.Method != null && x.Method.Contains(searchText))
-                          || x.FileInfo.Path.Contains(searchText)
-                          || x.Amount.ToString().Contains(searchText),
+                        ExpressionHelper.GetSearchForLog(searchText),
                         x => x.IpInfo,
                         x => x.FileInfo);
                 }
 
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<LogEntry>() / (double)pageSize)
-                    : (int)Math.Ceiling(repository.GetCount<LogEntry>(
-                        x => x.Date.ToString().Contains(searchText)
-                          || x.StatusCode.ToString().Contains(searchText)
-                          || (x.Method != null && x.Method.Contains(searchText))
-                          || x.FileInfo.Path.Contains(searchText)
-                          || x.Amount.ToString().Contains(searchText),
+                    : (int)Math.Ceiling(repository.GetCount(
+                        ExpressionHelper.GetSearchForLog(searchText),
                         x => x.IpInfo,
                         x => x.FileInfo)
                     / (double)pageSize);
@@ -392,24 +345,7 @@ namespace LogManager.BLL.Services
                     pageTotalCount++;
                 }
 
-                var minPage = (page - 1 < pageSettings.LinkCount / 2)
-                    ? page - 1
-                    : pageSettings.LinkCount / 2;
-
-                var maxPage = (pageTotalCount - page < pageSettings.LinkCount - minPage)
-                    ? pageTotalCount - page
-                    : pageSettings.LinkCount - minPage;
-
-                minPage = (page - 1 < pageSettings.LinkCount - maxPage)
-                    ? page - 1
-                    : pageSettings.LinkCount - maxPage;
-
-                var paginatedList = new PaginatedList<LogEntry>(
-                    filePage,
-                    page,
-                    pageSize,
-                    pageTotalCount,
-                    minPage, maxPage);
+                var paginatedList = GeneratePaginatedList(logPage, page, pageSize, pageTotalCount);
 
                 paginatedList.IsDescending = isDescending;
                 paginatedList.SortField = sortField;
@@ -417,23 +353,32 @@ namespace LogManager.BLL.Services
 
                 return paginatedList;
             }
-
-            
         }
-
-        private object FindPropertyValue(object source, string[] propertyChain)
+        
+        private PaginatedList<T> GeneratePaginatedList<T>(
+            IEnumerable<T> pageData,
+            int page, 
+            int pageSize, 
+            int pageTotalCount)
         {
-            //var properties = sortField.Split('.', StringSplitOptions.RemoveEmptyEntries);
-            PropertyInfo property = source.GetType().GetProperty(propertyChain[0]);
-            object entity = source;
+            var minPage = (page - 1 < pageSettings.LinkCount / 2)
+                    ? page - 1
+                    : pageSettings.LinkCount / 2;
 
-            for (var i = 0; i < propertyChain.Length; i++)
-            {
-                property = entity.GetType().GetProperty(propertyChain[i]);
-                entity = property.GetValue(entity);
-            }
+            var maxPage = (pageTotalCount - page < pageSettings.LinkCount - minPage)
+                ? pageTotalCount - page
+                : pageSettings.LinkCount - minPage;
 
-            return entity;
-        }
+            minPage = (page - 1 < pageSettings.LinkCount - maxPage)
+                ? page - 1
+                : pageSettings.LinkCount - maxPage;
+
+            return new PaginatedList<T>(
+                pageData,
+                page,
+                pageSize,
+                pageTotalCount,
+                minPage, maxPage);
+        }   
     }
 }

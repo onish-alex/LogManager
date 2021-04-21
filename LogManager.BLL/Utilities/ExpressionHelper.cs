@@ -1,14 +1,12 @@
 ﻿using LogManager.Core.Entities;
+using LogManager.Core.Settings;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogManager.BLL.Utilities
 {
-    public static class SortExpressions
+    public static class ExpressionHelper
     {
         private static Dictionary<string, Expression<Func<Ip, dynamic>>> ipExpressions = new Dictionary<string, Expression<Func<Ip, dynamic>>>()
         {
@@ -33,19 +31,39 @@ namespace LogManager.BLL.Utilities
             { "StatusCode", x => x.StatusCode },
         };
 
-        public static Expression<Func<LogEntry, dynamic>> ForLog(string sortName)
+        public static Expression<Func<LogEntry, dynamic>> GetSortForLog(string sortName)
         {
             return logEntryExpressions[sortName];
         }
 
-        public static Expression<Func<File, dynamic>> ForFile(string sortName)
+        public static Expression<Func<File, dynamic>> GetSortForFile(string sortName)
         {
             return fileExpressions[sortName];
         }
 
-        public static Expression<Func<Ip, dynamic>> ForIp(string sortName)
+        public static Expression<Func<Ip, dynamic>> GetSortForIp(string sortName)
         {
             return ipExpressions[sortName];
+        }
+
+        public static Expression<Func<LogEntry, bool>> GetSearchForLog(string searchText)
+        {
+            return x => x.Date.ToString().Contains(searchText)
+                          || x.StatusCode.ToString().Contains(searchText)
+                          || (x.Method != null && x.Method.Contains(searchText))
+                          || x.FileInfo.Path.Contains(searchText)
+                          || x.Amount.ToString().Contains(searchText);
+        }
+
+        public static Expression<Func<Ip, bool>> GetSearchForIp(string searchText)
+        {
+            return x => x.OwnerName != null && x.OwnerName.Contains(searchText);
+        }
+
+        public static Expression<Func<File, bool>> GetSearchForFile(string searchText)
+        {
+            return x => x.Path.Contains(searchText)
+                    || (x.Title != null && x.Title.Contains(searchText));
         }
     }
 }
