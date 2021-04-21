@@ -14,6 +14,8 @@ using FluentValidation;
 using File = LogManager.Core.Entities.File;
 using System.Threading;
 using Microsoft.Extensions.Options;
+using System.Reflection;
+using System.Linq.Expressions;
 
 namespace LogManager.BLL.Services
 {
@@ -182,7 +184,7 @@ namespace LogManager.BLL.Services
         public async Task<IEnumerable<File>> GetFilePage(
             int page, 
             int pageSize, 
-            string sortField, 
+            string sortField,
             bool isDescending,
             string searchText)
         {
@@ -210,17 +212,19 @@ namespace LogManager.BLL.Services
                
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    filePage = repository.GetPage<File>(
+                    filePage = repository.GetPage(
                         pageInfo,
-                        x => x.GetType().GetProperty(sortField).GetValue(x),
+                        true,
+                        SortExpressions.ForFile(sortField),
                         isDescending,
                         null);
                 }
                 else
                 {
-                    filePage = repository.GetPage<File>(
+                    filePage = repository.GetPage(
                         pageInfo,
-                        x => x.GetType().GetProperty(sortField).GetValue(x),
+                        true,
+                        SortExpressions.ForFile(sortField),
                         isDescending,
                         x => x.Path.Contains(searchText) 
                          || (x.Title != null && x.Title.Contains(searchText)));
@@ -273,8 +277,7 @@ namespace LogManager.BLL.Services
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<Ip>() / (double)pageSize)
                     : (int)Math.Ceiling(repository.GetCount<Ip>(
-                        x => x.AddressStr.Contains(searchText)
-                          || (x.OwnerName != null && x.OwnerName.Contains(searchText))) 
+                          x => x.OwnerName != null && x.OwnerName.Contains(searchText)) 
                     / (double)pageSize);
 
                 if (pageTotalCount == 0)
@@ -284,20 +287,21 @@ namespace LogManager.BLL.Services
 
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    filePage = repository.GetPage<Ip>(
+                    filePage = repository.GetPage(
                         pageInfo,
-                        x => x.GetType().GetProperty(sortField).GetValue(x),
+                        true,
+                        SortExpressions.ForIp(sortField),
                         isDescending,
                         null);
                 }
                 else
                 {
-                    filePage = repository.GetPage<Ip>(
+                    filePage = repository.GetPage(
                         pageInfo,
-                        x => x.GetType().GetProperty(sortField).GetValue(x),
+                        true,
+                        SortExpressions.ForIp(sortField),
                         isDescending,
-                        x => x.AddressStr.Contains(searchText)
-                         || (x.OwnerName != null && x.OwnerName.Contains(searchText)));
+                        x => x.OwnerName != null && x.OwnerName.Contains(searchText));
                 }
 
                 var minPage = (page - 1 < pageSettings.LinkCount / 2)
@@ -325,6 +329,111 @@ namespace LogManager.BLL.Services
 
                 return paginatedList;
             }
+        }
+
+        public async Task<IEnumerable<LogEntry>> GetLogEntryPage(
+            int page,
+            int pageSize,
+            string sortField,
+            bool isDescending,
+            string searchText)
+        {
+            using (var repository = repositoryFactory.CreateLogRepository())
+            {
+                var pageInfo = new PageInfo()
+                {
+                    PageNumber = page,
+                    PageSize = pageSize,
+                };
+
+                IEnumerable<LogEntry> filePage;
+
+                if (string.IsNullOrEmpty(searchText))
+                {
+                    filePage = repository.GetPage(
+                        pageInfo,
+                        true,
+                        SortExpressions.ForLog(sortField),
+                        isDescending,
+                        null,
+                        x => x.IpInfo,
+                        x => x.FileInfo);
+                }
+                else
+                {
+                    filePage = repository.GetPage(
+                        pageInfo,
+                        true,
+                        SortExpressions.ForLog(sortField),
+                        isDescending,
+                        x => x.Date.ToString().Contains(searchText)
+                          || x.StatusCode.ToString().Contains(searchText)
+                          || (x.Method != null && x.Method.Contains(searchText))
+                          || x.FileInfo.Path.Contains(searchText)
+                          || x.Amount.ToString().Contains(searchText),
+                        x => x.IpInfo,
+                        x => x.FileInfo);
+                }
+
+                var pageTotalCount = string.IsNullOrEmpty(searchText)
+                    ? (int)Math.Ceiling(await repository.GetCountAsync<LogEntry>() / (double)pageSize)
+                    : (int)Math.Ceiling(repository.GetCount<LogEntry>(
+                        x => x.Date.ToString().Contains(searchText)
+                          || x.StatusCode.ToString().Contains(searchText)
+                          || (x.Method != null && x.Method.Contains(searchText))
+                          || x.FileInfo.Path.Contains(searchText)
+                          || x.Amount.ToString().Contains(searchText),
+                        x => x.IpInfo,
+                        x => x.FileInfo)
+                    / (double)pageSize);
+
+                if (pageTotalCount == 0)
+                {
+                    pageTotalCount++;
+                }
+
+                var minPage = (page - 1 < pageSettings.LinkCount / 2)
+                    ? page - 1
+                    : pageSettings.LinkCount / 2;
+
+                var maxPage = (pageTotalCount - page < pageSettings.LinkCount - minPage)
+                    ? pageTotalCount - page
+                    : pageSettings.LinkCount - minPage;
+
+                minPage = (page - 1 < pageSettings.LinkCount - maxPage)
+                    ? page - 1
+                    : pageSettings.LinkCount - maxPage;
+
+                var paginatedList = new PaginatedList<LogEntry>(
+                    filePage,
+                    page,
+                    pageSize,
+                    pageTotalCount,
+                    minPage, maxPage);
+
+                paginatedList.IsDescending = isDescending;
+                paginatedList.SortField = sortField;
+                paginatedList.SearchText = searchText;
+
+                return paginatedList;
+            }
+
+            
+        }
+
+        private object FindPropertyValue(object source, string[] propertyChain)
+        {
+            //var properties = sortField.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            PropertyInfo property = source.GetType().GetProperty(propertyChain[0]);
+            object entity = source;
+
+            for (var i = 0; i < propertyChain.Length; i++)
+            {
+                property = entity.GetType().GetProperty(propertyChain[i]);
+                entity = property.GetValue(entity);
+            }
+
+            return entity;
         }
     }
 }

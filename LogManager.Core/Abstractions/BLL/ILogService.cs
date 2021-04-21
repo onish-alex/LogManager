@@ -27,5 +27,12 @@ namespace LogManager.Core.Abstractions.BLL
             string sortField,
             bool isDescending,
             string searchText);
+        
+        Task<IEnumerable<LogEntry>> GetLogEntryPage(
+            int page, 
+            int pageSize, 
+            string sortField, 
+            bool isDescending, 
+            string searchText);
     }
 }

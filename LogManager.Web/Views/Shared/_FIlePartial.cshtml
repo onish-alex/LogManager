@@ -1,4 +1,5 @@
 ﻿@model PaginatedList<File>
+@using LogManager.Web.Utilities;
 
 <input type="hidden" id="sort-field-input" value="@Model.SortField" />
 <input type="hidden" id="sort-descending-input" value="@Model.IsDescending.ToString()" />
@@ -8,7 +9,7 @@
 <button id="file-search">Искать</button>
 
 <div class="col-12 text-center border-top border-dark">
-    @for (var i = Model.Page + -Model.MinPage; i < Model.Page; i++)
+    @for (var i = Model.Page - Model.MinPage; i < Model.Page; i++)
     {
         <a asp-action="File"
             asp-route-page="@i"
@@ -37,35 +38,44 @@
 
 <table border="1" class="file-table">
     <tr>
-        <th id="file-path">Путь и название</th>
-        <th id="file-title">Наименование</th>
-        <th id="file-size">Размер</th>
+        <th id="file-path">Путь и название @(Model.SortField == "Path" ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="file-title">Наименование @(Model.SortField == "Title" ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="file-size">Размер@(Model.SortField == "Size" ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
     </tr>
 
-    @foreach (var file in Model)
+    @if (Model.Count != 0)
+    {
+        @foreach (var file in Model)
+        {
+            <tr>
+                <td>@file.Path</td>
+                <td>
+                    @if (file.Title != null)
+                    {
+                    <span>@file.Title</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+                <td>
+                    @if (file.Size != null)
+                    {
+                    <span>@file.Size</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    else
     {
         <tr>
-            <td>@file.Path</td>
-            <td>
-                @if (file.Title != null)
-                {
-                    <span>@file.Title</span>
-                }
-                else
-                {
-                    <span>-</span>
-                }
-            </td>
-            <td>
-                @if (file.Size != null)
-                {
-                    <span>@file.Size</span>
-                }
-                else
-                {
-                    <span>-</span>
-                }
-            </td>
+            <td colspan="3">Здесь пока пусто!</td>
         </tr>
     }
 </table>

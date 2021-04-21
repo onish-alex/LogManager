@@ -6,7 +6,6 @@ using LogManager.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -27,15 +26,34 @@ namespace LogManager.Web.Controllers
             this.logService = logService;
         }
 
-        public IActionResult LogEntry()
+        public async Task<IActionResult> LogEntry(
+            int page = 1,
+            int pageSize = 30,
+            string sortField = "Date",
+            bool isDescending = false,
+            string searchText = null)
         {
-            return View();
+            var logEntryPage = await logService.GetLogEntryPage(page, pageSize, sortField, isDescending, searchText) as PaginatedList<LogEntry>;
+
+            return View(logEntryPage);
+        }
+
+        public async Task<IActionResult> LogEntryAjax(
+            int page = 1,
+            int pageSize = 30,
+            string sortField = "Date",
+            bool isDescending = false,
+            string searchText = null)
+        {
+            var logEntryPage = await logService.GetLogEntryPage(page, pageSize, sortField, isDescending, searchText) as PaginatedList<LogEntry>;
+
+            return PartialView("_LogEntryPartial", logEntryPage);
         }
 
         public async Task<IActionResult> Ip(
             int page = 1,
             int pageSize = 30,
-            string sortField = "Id",
+            string sortField = "OwnerName",
             bool isDescending = false,
             string searchText = null)
         {
@@ -47,7 +65,7 @@ namespace LogManager.Web.Controllers
         public async Task<IActionResult> IpAjax(
             int page = 1,
             int pageSize = 30,
-            string sortField = "Id",
+            string sortField = "OwnerName",
             bool isDescending = false,
             string searchText = null)
         {
@@ -59,7 +77,7 @@ namespace LogManager.Web.Controllers
         public async Task<IActionResult> File(
             int page = 1, 
             int pageSize = 30, 
-            string sortField = "Id",
+            string sortField = "Path",
             bool isDescending = false,
             string searchText = null)
         {
@@ -71,7 +89,7 @@ namespace LogManager.Web.Controllers
         public async Task<IActionResult> FileAjax(
             int page = 1,
             int pageSize = 30,
-            string sortField = "Id",
+            string sortField = "Path",
             bool isDescending = false,
             string searchText = null)
         {

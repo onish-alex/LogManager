@@ -1,7 +1,8 @@
-﻿@model IEnumerable<int>
+﻿@model IEnumerable<LogEntry>
 @{
     ViewData["Title"] = "Логи";
 }
 
-<h1>Hi</h1>
-
+<div class="log-area">
+    <partial name="_LogEntryPartial" model="@Model" />
+</div>

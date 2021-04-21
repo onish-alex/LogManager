@@ -1,6 +1,5 @@
 ﻿using LogManager.Core.Abstractions.DAL;
 using LogManager.Core.Entities;
-using LogManager.Core.Extensions;
 using LogManager.Core.Utilities;
 using LogManager.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -107,36 +106,44 @@ namespace LogManager.DAL.Repositories
         }
 
         public IEnumerable<T> GetPage<T>(
-            PageInfo pageInfo, 
-            Func<T, object> sortField,
+            PageInfo pageInfo,
+            bool isNoTracking,
+            Expression<Func<T, object>> sortField,
             bool isDescending,
-            Func<T, bool> predicate,
+            Expression<Func<T, bool>> predicate,
             params Expression<Func<T, dynamic>>[] includes) where T : BaseEntity
         {
-            IQueryable<T> query = this.dbContext.Set<T>();
+            IQueryable<T> query;
+
+            if (isNoTracking)
+            {
+                query = this.dbContext.Set<T>().AsNoTracking();
+            }
+            else
+            {
+                query = this.dbContext.Set<T>();
+            }
 
             if (includes.Length != 0)
             {
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
             }
 
-            IEnumerable<T> result = query.ToList();
-
             if (predicate != null)
             {
-                result = result.Where(predicate);
+                query = query.Where(predicate);
             }
 
             if (sortField != null)
             {
-                result = (isDescending)
-                    ? result.OrderByDescending(sortField)
-                    : result.OrderBy(sortField);
+                query = (isDescending)
+                    ? query.OrderByDescending(sortField)
+                    : query.OrderBy(sortField);
             }
 
-            result = result.Skip(pageInfo.PageSize * (pageInfo.PageNumber - 1)).Take(pageInfo.PageSize);
+            query = query.Skip(pageInfo.PageSize * (pageInfo.PageNumber - 1)).Take(pageInfo.PageSize);
 
-            return result;
+            return query.ToList();
         }
 
         public async Task<long> GetCountAsync<T>() where T : BaseEntity
@@ -144,11 +151,16 @@ namespace LogManager.DAL.Repositories
             return await this.dbContext.Set<T>().CountAsync();
         }
 
-        public long GetCount<T>(Func<T, bool> predicate) where T : BaseEntity
+        public long GetCount<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, dynamic>>[] includes) where T : BaseEntity
         {
-            return this.dbContext.Set<T>()
-                .Where(predicate)
-                .Count();
+            IQueryable<T> query = this.dbContext.Set<T>().Where(predicate);
+
+            if (includes.Length != 0)
+            {
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+            }
+
+            return query.Count();
         }
 
     }

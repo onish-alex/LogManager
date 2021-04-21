@@ -26,24 +26,30 @@ function ShowProgress(fileName) {
 }
 
 $(document).ready(function () {
+    //$('th:first-child').append("&#9650;");
+
     $('.file-table th').on("click", FileSortClick)
     $('#file-search').on("click", FileSearchClick)
 
     $('.ip-table th').on("click", IpSortClick)
     $('#ip-search').on("click", IpSearchClick)
 
+    $('.log-table th').on("click", LogSortClick)
+    $('#log-search').on("click", LogSearchClick)
 })
 
 let sortFieldNames = new Map([
     ['file-path', 'Path'],
     ['file-title', 'Title'],
     ['file-size', 'Size'],
-    ['ip-address', 'AddressAsLong'],
+   // ['ip-address', 'AddressAsLong'],
     ['ip-owner-name', 'OwnerName'],
     ['log-date', 'Date'],
     ['log-method', 'Method'],
-    ['log-ip-address', 'Ip.AddressStr'],
-    ['log-ip-owner', 'Ip.OwnerName'],
+    ['log-file-path', 'FileInfo.Path'],
+    ['log-file-title', 'FileInfo.Title'],
+    //['log-ip-address', 'IpInfo.AddressAsLong'],
+    ['log-ip-owner-name', 'IpInfo.OwnerName'],
     ['log-amount', 'Amount'],
     ['log-status', 'StatusCode'],
 ])
@@ -52,6 +58,10 @@ let requestInfo = {}
 
 function SortSetup(buttonElement) {
     requestInfo.id = buttonElement.attr('id')
+
+    if (!sortFieldNames.has(requestInfo.id))
+        return false
+
     requestInfo.fieldToSort = sortFieldNames.get(requestInfo.id)
     requestInfo.isDescending = $('#sort-descending-input').val() == 'True'
     requestInfo.oldFieldToSort = $('#sort-field-input').val()
@@ -62,18 +72,21 @@ function SortSetup(buttonElement) {
 
     requestInfo.pageSize = $('#page-size-input').val()
     requestInfo.searchText = $('#search-input').val()
+
+    return true;
 }
 
 function FileSortClick() {
-    SortSetup($(this))
+    var result = SortSetup($(this))
 
-    console.log(requestInfo)
+    if (!result)
+        return
 
     $.get(`/Home/FileAjax?page=1&pageSize=${requestInfo.pageSize}&sortField=${requestInfo.fieldToSort}&isDescending=${requestInfo.isDescending}&searchText=${requestInfo.searchText}`,
         undefined,
         (data) => {
             $('.file-area').html(data)
-            $('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
+            //$('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
             $('.file-table th').on("click", FileSortClick)
             $('#file-search').on("click", FileSearchClick)
         })
@@ -94,13 +107,16 @@ function FileSearchClick() {
 }
 
 function IpSortClick() {
-    SortSetup($(this))
+    var result = SortSetup($(this))
+
+    if (!result)
+        return
 
     $.get(`/Home/IpAjax?page=1&pageSize=${requestInfo.pageSize}&sortField=${requestInfo.fieldToSort}&isDescending=${requestInfo.isDescending}&searchText=${requestInfo.searchText}`,
         undefined,
         (data) => {
             $('.ip-area').html(data)
-            $('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
+            //$('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
             $('.ip-table th').on("click", IpSortClick)
             $('#ip-search').on("click", IpSearchClick)
         })
@@ -117,5 +133,35 @@ function IpSearchClick() {
             $('.ip-area').html(data)
             $('.ip-table th').on("click", IpSortClick)
             $('#ip-search').on("click", IpSearchClick)
+        })
+}
+
+function LogSortClick() {
+    var result = SortSetup($(this))
+
+    if (!result)
+        return
+
+    $.get(`/Home/LogEntryAjax?page=1&pageSize=${requestInfo.pageSize}&sortField=${requestInfo.fieldToSort}&isDescending=${requestInfo.isDescending}&searchText=${requestInfo.searchText}`,
+        undefined,
+        (data) => {
+            $('.log-area').html(data)
+            //$('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
+            $('.log-table th').on("click", LogSortClick)
+            $('#log-search').on("click", LogSearchClick)
+        })
+}
+
+function LogSearchClick() {
+
+    let pageSize = $('#page-size-input').val()
+    let searchText = $('#search-input').val()
+
+    $.get(`/Home/LogEntryAjax?page=1&pageSize=${pageSize}&searchText=${searchText}`,
+        undefined,
+        (data) => {
+            $('.log-area').html(data)
+            $('.log-table th').on("click", LogSortClick)
+            $('#log-search').on("click", LogSearchClick)
         })
 }

@@ -1,0 +1,95 @@
+﻿@model PaginatedList<LogEntry>
+@using LogManager.Web.Utilities;
+
+<input type="hidden" id="sort-field-input" value="@Model.SortField" />
+<input type="hidden" id="sort-descending-input" value="@Model.IsDescending.ToString()" />
+<input type="hidden" id="page-size-input" value="@Model.PageSize" />
+
+<input type="text" id="search-input" value="@Model.SearchText" placeholder="Поиск..." />
+<button id="log-search">Искать</button>
+
+<div class="col-12 text-center border-top border-dark">
+    @for (var i = Model.Page - Model.MinPage; i < Model.Page; i++)
+    {
+        <a asp-action="LogEntry"
+           asp-route-page="@i"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-sortField="@Model.SortField"
+           asp-route-isDescending="@Model.IsDescending"
+           asp-route-searchText="@Model.SearchText">
+            @i
+        </a>
+    }
+
+    <span>@Model.Page</span>
+
+    @for (var i = Model.Page + 1; i <= Model.Page + Model.MaxPage; i++)
+    {
+        <a asp-action="LogEntry"
+           asp-route-page="@i"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-sortField="@Model.SortField"
+           asp-route-isDescending="@Model.IsDescending"
+           asp-route-searchText="@Model.SearchText">
+            @i
+        </a>
+    }
+</div>
+
+
+
+<table border="1" class="log-table">
+    <tr>
+        <th id="log-date">Дата и время               @(Model.SortField == "Date"                 ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="log-method">Тип                      @(Model.SortField == "Method"               ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="log-file-title">Наименование         @(Model.SortField == "FileInfo.Title"       ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="log-file-path">Путь и название файла @(Model.SortField == "FileInfo.Path"        ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="log-ip-address">IP-адрес</th>
+        <th id="log-ip-owner-name">Название компании @(Model.SortField == "IpInfo.OwnerName"     ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="log-amount">Объем переданных данных  @(Model.SortField == "Amount"               ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+        <th id="log-status">Статус-код запроса       @(Model.SortField == "StatusCode"           ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
+    </tr>
+
+    @if (Model.Count != 0)
+    {
+        @foreach (var logEntry in Model)
+        {
+            <tr>
+                <td>@logEntry.Date</td>
+                <td>@logEntry.Method</td>
+                <td>
+                    @if (logEntry.FileInfo.Title != null)
+                    {
+                        <span>@logEntry.FileInfo.Title</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+                <td>@logEntry.FileInfo.Path</td>
+                <td>@logEntry.IpInfo.AddressStr</td>
+                <td>
+                    @if (logEntry.IpInfo.OwnerName != null)
+                    {
+                        <span>@logEntry.IpInfo.OwnerName</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+                <td>@logEntry.Amount</td>
+                <td>@logEntry.StatusCode</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="8">Здесь пока пусто!</td>
+        </tr>
+    }
+
+
+</table>

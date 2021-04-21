@@ -27,9 +27,10 @@ namespace LogManager.Core.Abstractions.DAL
 
         IEnumerable<T> GetPage<T>(
             PageInfo pageInfo,
-            Func<T, object> sortField,
+            bool isNoTracking,
+            Expression<Func<T, object>> sortField,
             bool isDescending,
-            Func<T, bool> predicate,
+            Expression<Func<T, bool>> predicate,
             params Expression<Func<T, dynamic>>[] includes) where T : BaseEntity;
 
 
@@ -45,8 +46,6 @@ namespace LogManager.Core.Abstractions.DAL
 
         Task<long> GetCountAsync<T>() where T : BaseEntity;
 
-        long GetCount<T>(Func<T, bool> predicate) where T : BaseEntity;
-
-
+        long GetCount<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, dynamic>>[] includes) where T : BaseEntity;
     }
 }

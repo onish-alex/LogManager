@@ -73,6 +73,7 @@ body {
 table {
     width: 100%;
     word-break: break-word;
+    text-align: center;
 }
 
 .file-table tr *:first-child {
@@ -85,6 +86,50 @@ table {
 
 .file-table tr *:nth-child(3) {
     width: 15%;
+}
+
+
+
+.ip-table tr *:first-child {
+    width: 30%;
+}
+
+.ip-table tr *:nth-child(2) {
+    width: 70%;
+}
+
+
+
+.log-table tr *:first-child {
+    width: 10%;
+}
+
+.log-table tr *:nth-child(2){
+    width: 5%;
+}
+
+.log-table tr *:nth-child(3) {
+    width: 15%;
+}
+
+.log-table tr *:nth-child(4) {
+    width: 25%;
+}
+
+.log-table tr *:nth-child(5) {
+    width: 15%;
+}
+
+.log-table tr *:nth-child(6) {
+    width: 10%;
+}
+
+.log-table tr *:nth-child(7) {
+    width: 10%;
+}
+
+.log-table tr *:nth-child(8) {
+    width: 10%;
 }
 
 td, th {

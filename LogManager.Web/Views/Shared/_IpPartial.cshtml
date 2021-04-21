@@ -1,4 +1,5 @@
 ﻿@model PaginatedList<Ip>
+@using LogManager.Web.Utilities;
 
 <input type="hidden" id="sort-field-input" value="@Model.SortField" />
 <input type="hidden" id="sort-descending-input" value="@Model.IsDescending.ToString()" />
@@ -8,7 +9,7 @@
 <button id="ip-search">Искать</button>
 
 <div class="col-12 text-center border-top border-dark">
-    @for (var i = Model.Page + -Model.MinPage; i < Model.Page; i++)
+    @for (var i = Model.Page - Model.MinPage; i < Model.Page; i++)
     {
         <a asp-action="Ip"
            asp-route-page="@i"
@@ -38,23 +39,34 @@
 <table border="1" class="ip-table">
     <tr>
         <th id="ip-address">IP-адрес</th>
-        <th id="ip-owner-name">Компания</th>
+        <th id="ip-owner-name">Компания @(Model.SortField == "OwnerName" ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
     </tr>
 
-    @foreach (var ip in Model)
+    @if (Model.Count != 0)
+    {
+        @foreach (var ip in Model)
+        {
+            <tr>
+                <td>@IpConverter.FromBytes(ip.Address)</td>
+                <td>
+                    @if (ip.OwnerName != null)
+                    {
+                    <span>@ip.OwnerName</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    else
     {
         <tr>
-            <td>@IpConverter.FromBytes(ip.Address)</td>
-            <td>
-                @if (ip.OwnerName != null)
-                {
-                    <span>@ip.OwnerName</span>
-                }
-                else
-                {
-                    <span>-</span>
-                }
-            </td>
+            <td colspan="2">Здесь пока пусто!</td>
         </tr>
     }
+
+
 </table>
