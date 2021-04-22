@@ -12,7 +12,7 @@ namespace LogManager.Core.Abstractions.BLL
 
         bool IsLoading { get; }
 
-        Task LoadLogFile(string path);
+        void LoadLogFile(string path);
 
         Task<IEnumerable<File>> GetFilePage(
             int page,

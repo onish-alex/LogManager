@@ -13,8 +13,7 @@ function ShowProgress(fileName) {
             $("#process-percent").html(parseInt(data) + "%")
 
             if (parseInt(data) === 100) {
-                clearInterval(progressInterval)
-                clearInterval(dotInterval)
+                window.location = "/Home/Load"
             }
         })  
     }, progressIntervalLength)

@@ -1,11 +1,13 @@
 ﻿using LogManager.BLL.Utilities;
 using LogManager.Core.Abstractions.BLL;
 using LogManager.Core.Entities;
+using LogManager.Core.Resources;
 using LogManager.Core.Settings;
 using LogManager.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -131,7 +133,21 @@ namespace LogManager.Web.Controllers
                     file.CopyTo(stream);
                 }
 
-                logService.LoadLogFile(this.pathToSave + file.FileName);
+                try
+                {
+                    logService.LoadLogFile(this.pathToSave + file.FileName);
+                }
+                catch
+                {
+                    var exceptionViewModel = new LoadViewModel()
+                    {
+                        IsLoad = false,
+                        FileName = file.FileName,
+                        Message = ErrorMessages.FileWithoutLogs
+                    };
+
+                    return View(exceptionViewModel);
+                }
 
                 var viewModel = new LoadViewModel()
                 {

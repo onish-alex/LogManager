@@ -61,6 +61,15 @@ namespace LogManager.Core.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на В выбранном файле не содержится лог-записей.
+        /// </summary>
+        public static string FileWithoutLogs {
+            get {
+                return ResourceManager.GetString("FileWithoutLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Некорректный формат IP адреса.
         /// </summary>
         public static string InvalidIpFormat {

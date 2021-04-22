@@ -48,9 +48,12 @@ namespace LogManager.BLL.Services
             this.pageSettings = pageOptions.Value;
         }
 
-        public async Task LoadLogFile(string path)
+        public void LoadLogFile(string path)
         {
-            var parsedData = await this.ReadLogsFromFile(path);
+            var parsedData = this.ReadLogsFromFile(path);
+
+            if (parsedData.Count() == 0)
+                throw new ArgumentException();
 
             progressPercent = 0;
             entriesProcessedCount = 0;
@@ -66,10 +69,10 @@ namespace LogManager.BLL.Services
             Parallel.ForEach(parsedData, options, WriteLogToDb);
 
             IsLoading = false;
-            progressPercent = 0;
+            progressPercent = 100;
         }
 
-        private async Task<IEnumerable<ParsedLogEntry>> ReadLogsFromFile(string path)
+        private IEnumerable<ParsedLogEntry> ReadLogsFromFile(string path)
         {
             var parsedData = new List<ParsedLogEntry>();
 
@@ -79,7 +82,7 @@ namespace LogManager.BLL.Services
 
                 while (!reader.EndOfStream)
                 {
-                    var entry = await reader.ReadLineAsync();
+                    var entry = reader.ReadLine();
 
                     try
                     {

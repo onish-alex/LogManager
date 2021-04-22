@@ -5,6 +5,11 @@
 
 <h1>Загрузить новый лог-файл</h1>
 
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <h3>@Model.Message</h3>
+} 
+
 @if (!Model.IsLoad)
 {
 <form asp-action="Load" enctype="multipart/form-data" id="file-load">
