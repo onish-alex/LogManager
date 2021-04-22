@@ -1,5 +1,4 @@
-﻿using LogManager.Core.Abstractions.DAL;
-using LogManager.Core.Settings;
+﻿using LogManager.Core.Settings;
 using LogManager.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

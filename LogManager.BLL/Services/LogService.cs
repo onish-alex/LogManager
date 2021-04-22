@@ -197,7 +197,7 @@ namespace LogManager.BLL.Services
 
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<File>() / (double)pageSize)
-                    : (int)Math.Ceiling(repository.GetCount<File>(
+                    : (int)Math.Ceiling(await repository.GetCountAsync(
                     ExpressionHelper.GetSearchForFile(searchText)) 
                     / (double)pageSize);
 
@@ -208,7 +208,7 @@ namespace LogManager.BLL.Services
                
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    filePage = repository.GetPage(
+                    filePage = await repository.GetPageAsync(
                         pageInfo,
                         true,
                         ExpressionHelper.GetSortForFile(sortField),
@@ -217,7 +217,7 @@ namespace LogManager.BLL.Services
                 }
                 else
                 {
-                    filePage = repository.GetPage(
+                    filePage = await repository.GetPageAsync(
                         pageInfo,
                         true,
                         ExpressionHelper.GetSortForFile(sortField),
@@ -254,7 +254,7 @@ namespace LogManager.BLL.Services
 
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<Ip>() / (double)pageSize)
-                    : (int)Math.Ceiling(repository.GetCount<Ip>(
+                    : (int)Math.Ceiling(await repository.GetCountAsync(
                           ExpressionHelper.GetSearchForIp(searchText)) 
                     / (double)pageSize);
 
@@ -265,7 +265,7 @@ namespace LogManager.BLL.Services
 
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    ipPage = repository.GetPage(
+                    ipPage = await repository.GetPageAsync(
                         pageInfo,
                         true,
                         ExpressionHelper.GetSortForIp(sortField),
@@ -274,7 +274,7 @@ namespace LogManager.BLL.Services
                 }
                 else
                 {
-                    ipPage = repository.GetPage(
+                    ipPage = await repository.GetPageAsync(
                         pageInfo,
                         true,
                         ExpressionHelper.GetSortForIp(sortField),
@@ -311,7 +311,7 @@ namespace LogManager.BLL.Services
 
                 if (string.IsNullOrEmpty(searchText))
                 {
-                    logPage = repository.GetPage(
+                    logPage = await repository.GetPageAsync(
                         pageInfo,
                         true,
                         ExpressionHelper.GetSortForLog(sortField),
@@ -322,7 +322,7 @@ namespace LogManager.BLL.Services
                 }
                 else
                 {
-                    logPage = repository.GetPage(
+                    logPage = await repository.GetPageAsync(
                         pageInfo,
                         true,
                         ExpressionHelper.GetSortForLog(sortField),
@@ -334,7 +334,7 @@ namespace LogManager.BLL.Services
 
                 var pageTotalCount = string.IsNullOrEmpty(searchText)
                     ? (int)Math.Ceiling(await repository.GetCountAsync<LogEntry>() / (double)pageSize)
-                    : (int)Math.Ceiling(repository.GetCount(
+                    : (int)Math.Ceiling(await repository.GetCountAsync(
                         ExpressionHelper.GetSearchForLog(searchText),
                         x => x.IpInfo,
                         x => x.FileInfo)
