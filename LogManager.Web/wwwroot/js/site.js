@@ -82,11 +82,7 @@ function FileSortClick() {
 
     $.get(`/Home/FileAjax?page=1&pageSize=${requestInfo.pageSize}&sortField=${requestInfo.fieldToSort}&isDescending=${requestInfo.isDescending}&searchText=${requestInfo.searchText}`,
         undefined,
-        (data) => {
-            $('.file-area').html(data)
-            $('.file-table th').on("click", FileSortClick)
-            $('#file-search').on("click", FileSearchClick)
-        })
+        FileResponseHandler)
 }
 
 function FileSearchClick() {
@@ -96,11 +92,13 @@ function FileSearchClick() {
 
     $.get(`/Home/FileAjax?page=1&pageSize=${pageSize}&searchText=${searchText}`,
         undefined,
-        (data) => {
-            $('.file-area').html(data)
-            $('.file-table th').on("click", FileSortClick)
-            $('#file-search').on("click", FileSearchClick)
-        })
+        FileResponseHandler)
+}
+
+function FileResponseHandler(data) {
+    $('.file-area').html(data)
+    $('.file-table th').on("click", FileSortClick)
+    $('#file-search').on("click", FileSearchClick)
 }
 
 function IpSortClick() {
@@ -111,12 +109,7 @@ function IpSortClick() {
 
     $.get(`/Home/IpAjax?page=1&pageSize=${requestInfo.pageSize}&sortField=${requestInfo.fieldToSort}&isDescending=${requestInfo.isDescending}&searchText=${requestInfo.searchText}`,
         undefined,
-        (data) => {
-            $('.ip-area').html(data)
-            //$('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
-            $('.ip-table th').on("click", IpSortClick)
-            $('#ip-search').on("click", IpSearchClick)
-        })
+        IpResponseHandler)
 }
 
 function IpSearchClick() {
@@ -126,11 +119,13 @@ function IpSearchClick() {
 
     $.get(`/Home/IpAjax?page=1&pageSize=${pageSize}&searchText=${searchText}`,
         undefined,
-        (data) => {
-            $('.ip-area').html(data)
-            $('.ip-table th').on("click", IpSortClick)
-            $('#ip-search').on("click", IpSearchClick)
-        })
+        IpResponseHandler)
+}
+
+function IpResponseHandler(data) {
+    $('.ip-area').html(data)
+    $('.ip-table th').on("click", IpSortClick)
+    $('#ip-search').on("click", IpSearchClick)
 }
 
 function LogSortClick() {
@@ -141,12 +136,7 @@ function LogSortClick() {
 
     $.get(`/Home/LogEntryAjax?page=1&pageSize=${requestInfo.pageSize}&sortField=${requestInfo.fieldToSort}&isDescending=${requestInfo.isDescending}&searchText=${requestInfo.searchText}`,
         undefined,
-        (data) => {
-            $('.log-area').html(data)
-            //$('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
-            $('.log-table th').on("click", LogSortClick)
-            $('#log-search').on("click", LogSearchClick)
-        })
+        LogResponseHandler)
 }
 
 function LogSearchClick() {
@@ -156,9 +146,11 @@ function LogSearchClick() {
 
     $.get(`/Home/LogEntryAjax?page=1&pageSize=${pageSize}&searchText=${searchText}`,
         undefined,
-        (data) => {
-            $('.log-area').html(data)
-            $('.log-table th').on("click", LogSortClick)
-            $('#log-search').on("click", LogSearchClick)
-        })
+        LogResponseHandler)
+}
+
+function LogResponseHandler(data) {
+    $('.log-area').html(data)
+    $('.log-table th').on("click", LogSortClick)
+    $('#log-search').on("click", LogSearchClick)
 }
