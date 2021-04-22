@@ -113,6 +113,17 @@ namespace LogManager.Web.Controllers
         [HttpPost]
         public IActionResult Load(IFormFile file)
         {
+            if (file == null)
+            {
+                var viewModel = new LoadViewModel()
+                {
+                    IsLoad = logService.IsLoading,
+                    FileName = logService.IsLoading ? logService.FileInProcess : string.Empty,
+                };
+
+                return View(viewModel);
+            }
+
             if (!logService.IsLoading)
             {
                 using (var stream = new FileStream(this.pathToSave + file.FileName, FileMode.Create))
