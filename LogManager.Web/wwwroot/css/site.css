@@ -147,9 +147,3 @@ th:hover {
 th:active {
     background-color: dodgerblue;
 }
-
-th[id*="ip-address"],
-th[id*="ip-address"]:hover,
-th[id*="ip-address"]:active {
-    background-color: white
-}

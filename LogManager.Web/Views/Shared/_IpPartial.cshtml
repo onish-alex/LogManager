@@ -38,7 +38,7 @@
 
 <table border="1" class="ip-table">
     <tr>
-        <th id="ip-address">IP-адрес</th>
+        <th id="ip-address">IP-адрес @(Model.SortField == "Address" ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
         <th id="ip-owner-name">Компания @(Model.SortField == "OwnerName" ? Html.Raw(ViewHelper.GetSortArrow(Model.IsDescending)) : string.Empty)</th>
     </tr>
 

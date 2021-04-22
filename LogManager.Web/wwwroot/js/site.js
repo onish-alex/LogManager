@@ -26,8 +26,6 @@ function ShowProgress(fileName) {
 }
 
 $(document).ready(function () {
-    //$('th:first-child').append("&#9650;");
-
     $('.file-table th').on("click", FileSortClick)
     $('#file-search').on("click", FileSearchClick)
 
@@ -42,13 +40,13 @@ let sortFieldNames = new Map([
     ['file-path', 'Path'],
     ['file-title', 'Title'],
     ['file-size', 'Size'],
-   // ['ip-address', 'AddressAsLong'],
+    ['ip-address', 'Address'],
     ['ip-owner-name', 'OwnerName'],
     ['log-date', 'Date'],
     ['log-method', 'Method'],
     ['log-file-path', 'FileInfo.Path'],
     ['log-file-title', 'FileInfo.Title'],
-    //['log-ip-address', 'IpInfo.AddressAsLong'],
+    ['log-ip-address', 'IpInfo.Address'],
     ['log-ip-owner-name', 'IpInfo.OwnerName'],
     ['log-amount', 'Amount'],
     ['log-status', 'StatusCode'],
@@ -86,7 +84,6 @@ function FileSortClick() {
         undefined,
         (data) => {
             $('.file-area').html(data)
-            //$('#' + requestInfo.id).append(requestInfo.isDescending ? '&#9660;' : '&#9650;')
             $('.file-table th').on("click", FileSortClick)
             $('#file-search').on("click", FileSearchClick)
         })

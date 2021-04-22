@@ -53,7 +53,7 @@ namespace LogManager.Web.Controllers
         public async Task<IActionResult> Ip(
             int page = 1,
             int pageSize = 30,
-            string sortField = "OwnerName",
+            string sortField = "Address",
             bool isDescending = false,
             string searchText = null)
         {
@@ -65,7 +65,7 @@ namespace LogManager.Web.Controllers
         public async Task<IActionResult> IpAjax(
             int page = 1,
             int pageSize = 30,
-            string sortField = "OwnerName",
+            string sortField = "Address",
             bool isDescending = false,
             string searchText = null)
         {

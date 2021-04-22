@@ -1,5 +1,4 @@
 ﻿using LogManager.Core.Entities;
-using LogManager.Core.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -11,6 +10,7 @@ namespace LogManager.BLL.Utilities
         private static Dictionary<string, Expression<Func<Ip, dynamic>>> ipExpressions = new Dictionary<string, Expression<Func<Ip, dynamic>>>()
         {
             { "OwnerName", x => x.OwnerName },
+            { "Address", x => x.Address },
         };
 
         private static Dictionary<string, Expression<Func<File, dynamic>>> fileExpressions = new Dictionary<string, Expression<Func<File, dynamic>>>()
@@ -27,6 +27,7 @@ namespace LogManager.BLL.Utilities
             { "FileInfo.Path", x => x.FileInfo.Path },
             { "FileInfo.Title", x => x.FileInfo.Title },
             { "IpInfo.OwnerName", x => x.IpInfo.OwnerName },
+            { "IpInfo.Address", x => x.IpInfo.Address },
             { "Method", x => x.Method },
             { "StatusCode", x => x.StatusCode },
         };
@@ -52,6 +53,8 @@ namespace LogManager.BLL.Utilities
                           || x.StatusCode.ToString().Contains(searchText)
                           || (x.Method != null && x.Method.Contains(searchText))
                           || x.FileInfo.Path.Contains(searchText)
+                          || (x.FileInfo.Title != null && x.FileInfo.Title.Contains(searchText))
+                          || (x.IpInfo.OwnerName != null && x.IpInfo.OwnerName.Contains(searchText))
                           || x.Amount.ToString().Contains(searchText);
         }
 
